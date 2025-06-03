@@ -1,0 +1,11 @@
+<?php
+protected $table = 'matches';
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class MatchGame extends Model
+{
+    //
+}
