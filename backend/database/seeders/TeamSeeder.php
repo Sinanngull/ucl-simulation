@@ -2,15 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Team;
 
 class TeamSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-    public function run()
+    public function run(): void
     {
         $teams = [
             ['name' => 'Real Madrid', 'power' => 90],
@@ -24,7 +24,7 @@ class TeamSeeder extends Seeder
         ];
 
         foreach ($teams as $team) {
-            \App\Models\Team::create($team);
+            Team::create($team);
         }
     }
-
+}
