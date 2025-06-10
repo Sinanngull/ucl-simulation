@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Services\FixtureGeneratorService;
+use App\Services\MatchSimulatorService;
 
-Route::get('/generate-fixtures', function (FixtureGeneratorService $fixtureService) {
-    $fixtureService->generate();
-    return 'Fixtures generated!';
+Route::get('/simulate-matches', function (MatchSimulatorService $simulator) {
+    $simulator->simulate();
+    return 'Matches simulated!';
 });
+
 
 
 ?>
