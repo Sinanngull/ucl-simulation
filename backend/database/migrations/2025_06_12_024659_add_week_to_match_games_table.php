@@ -6,20 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     public function up(): void
     {
-        Schema::create('teams', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->integer('power');
-            $table->timestamps();
+        Schema::table('match_games', function (Blueprint $table) {
+            $table->integer('week')->default(1)->after('played');
         });
     }
 
-
     public function down(): void
     {
-        Schema::dropIfExists('teams');
+        Schema::table('match_games', function (Blueprint $table) {
+            $table->dropColumn('week');
+        });
     }
 };

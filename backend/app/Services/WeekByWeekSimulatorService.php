@@ -38,4 +38,28 @@ class WeekByWeekSimulatorService
             'matches' => $matches,
         ];
     }
+
+
+    public function groupedByWeek(): array
+    {
+        return MatchGame::with('homeTeam', 'awayTeam')
+            ->orderBy('week')
+            ->orderBy('id')
+            ->get()
+            ->groupBy('week')
+            ->map(function ($matches, $week) {
+                return [
+                    'week' => (int) $week,
+                    'matches' => $matches->map(function ($match) {
+                        return [
+                            'home_team' => $match->homeTeam->name,
+                            'away_team' => $match->awayTeam->name,
+                        ];
+                    })->values(),
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
+
 }
