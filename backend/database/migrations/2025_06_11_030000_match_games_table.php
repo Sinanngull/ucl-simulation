@@ -6,12 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('matches', function (Blueprint $table) {
+        Schema::create('match_games', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('home_team_id');
             $table->unsignedBigInteger('away_team_id');
@@ -22,10 +19,6 @@ return new class extends Migration
         });
     }
 
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('match_games');

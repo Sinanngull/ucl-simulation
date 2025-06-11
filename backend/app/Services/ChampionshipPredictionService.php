@@ -2,59 +2,48 @@
 
 namespace App\Services;
 
-use App\Models\MatchGame;
 use App\Models\Team;
+use App\Models\MatchGame;
 
 class ChampionshipPredictionService
 {
-    public function calculate(int $simulationCount = 1000): array
+    public function calculate(): array
     {
         $teams = Team::all();
-        $teamIds = $teams->pluck('id')->all();
-        $winCounts = array_fill_keys($teamIds, 0);
+        $points = [];
 
-        for ($i = 0; $i < $simulationCount; $i++) {
-            $points = array_fill_keys($teamIds, 0);
+        foreach ($teams as $team) {
+            $playedMatches = MatchGame::where(function ($q) use ($team) {
+                $q->where('home_team_id', $team->id)->orWhere('away_team_id', $team->id);
+            })->where('played', true)->get();
 
+            $teamPoints = 0;
 
-            foreach (MatchGame::all() as $match) {
-                $home = $match->home_team_id;
-                $away = $match->away_team_id;
+            foreach ($playedMatches as $match) {
+                $isHome = $match->home_team_id === $team->id;
+                $teamGoals = $isHome ? $match->home_team_score : $match->away_team_score;
+                $opponentGoals = $isHome ? $match->away_team_score : $match->home_team_score;
 
-                $homePower = $teams->firstWhere('id', $home)->power;
-                $awayPower = $teams->firstWhere('id', $away)->power;
-
-
-                $totalPower = $homePower + $awayPower;
-                $chance = rand(1, $totalPower);
-
-                if ($chance <= $homePower) {
-                    $points[$home] += 3;
-                } elseif ($chance <= $homePower + ($awayPower * 0.2)) {
-                    $points[$home] += 1;
-                    $points[$away] += 1;
-                } else {
-                    $points[$away] += 3;
+                if ($teamGoals > $opponentGoals) {
+                    $teamPoints += 3;
+                } elseif ($teamGoals === $opponentGoals) {
+                    $teamPoints += 1;
                 }
             }
 
-
-            $maxPoints = max($points);
-            $winners = array_keys($points, $maxPoints);
-
-            foreach ($winners as $winnerId) {
-                $winCounts[$winnerId] += 1 / count($winners);
-            }
+            $points[$team->name] = $teamPoints;
         }
 
-        $results = [];
-        foreach ($teams as $team) {
-            $results[] = [
-                'team' => $team->name,
-                'chance' => round(($winCounts[$team->id] / $simulationCount) * 100, 2),
+        $totalPoints = array_sum($points) ?: 1; // 0'a bölünme hatasını engelle
+        $prediction = [];
+
+        foreach ($points as $teamName => $teamPoint) {
+            $prediction[] = [
+                'team' => $teamName,
+                'chance' => round(($teamPoint / $totalPoints) * 100),
             ];
         }
 
-        return $results;
+        return $prediction;
     }
 }

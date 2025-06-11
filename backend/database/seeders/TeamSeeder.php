@@ -7,9 +7,7 @@ use App\Models\Team;
 
 class TeamSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
         $teams = [
